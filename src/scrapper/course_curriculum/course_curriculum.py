@@ -18,9 +18,9 @@ SEMESTER_TYPES = {
 }
 GRADUATE_SEMESTERS = ("FIRST", "SECOND")
 COURSE_TYPES = {
-    "STCU000700001": 'MAJOR',
+    "STCU000700001": "MAJOR",
     "STCU000700002": "TEACHER_EDUCATION",
-    "STCU000700003": 'GENERAL_ELECTIVE',
+    "STCU000700003": "GENERAL_ELECTIVE",
     "STCU000700004": "FREE_ELECTIVE",
 }
 
@@ -83,7 +83,7 @@ def get_course_curriculum_targets(major_code, record):
 
     try:
         grade = int(grade_value)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return []
 
     if grade not in range(1, 5):
@@ -237,7 +237,7 @@ def post_course_curriculums():
                             continue
                         if course_type == "MAJOR":
                             if record.get("sbjetSctcd") == "STCU000800012":
-                                course_type = "MAJOR_REQUIRED" 
+                                course_type = "MAJOR_REQUIRED"
                             elif record.get("sbjetSctcd") == "STCU000800004":
                                 course_type = "MAJOR_ELECTIVE"
                             else:
