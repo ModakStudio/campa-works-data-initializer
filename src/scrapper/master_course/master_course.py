@@ -103,7 +103,7 @@ def post_single_master_course(data):
     if response.status_code != 201:
         print(
             f"Failed to post master course for {data.get('course_code')}. "
-            f"Status code: {response.status_code}"
+            f"Status code: {response.status_code}, Message: {response.text}"
         )
     else:
         print(f"Successfully posted data for {data.get('course_code')}.")
@@ -148,7 +148,7 @@ def post_excel_master_courses(excel_file_path):
             print(
                 f"Failed to post master course data for "
                 f"{record['course_code']}. "
-                f"Status code: {response.status_code}"
+                f"Status code: {response.status_code}, Message: {response.text}"
             )
             response.raise_for_status()
         else:
@@ -183,13 +183,14 @@ def post_master_courses():
                                 "lecture": int(record["thryTime"]),
                                 "practice": int(record["prctsTime"]),
                                 "course_type": get_course_type(major["major_code"]),
+                                "is_core": False,
                                 "course_status": "ACTIVE",
                             },
                             headers={"Content-Type": "application/json"},
                         )
                         if response.status_code != 201:
                             print(
-                                f"Failed to post master course data for {course_code}. Status code: {response.status_code}"
+                                f"Failed to post master course data for {course_code}. Status code: {response.status_code}, Message: {response.text}"
                             )
                         else:
                             print(f"Successfully posted data for {course_code}.")
