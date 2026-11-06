@@ -4,45 +4,12 @@ from bs4 import BeautifulSoup
 
 def post_majors():
     majors = [
-        {"major_name": "컴퓨터학부", "major_code": "1O02", "major_status": "ACTIVE"},
-        {
-            "major_name": "글로벌소프트웨어융합전공",
-            "major_code": "1O0204",
-            "major_status": "ACTIVE",
-        },
-        {
-            "major_name": "플랫폼소프트웨어전공",
-            "major_code": "1O0205",
-            "major_status": "ACTIVE",
-        },
-        {
-            "major_name": "데이터과학전공",
-            "major_code": "1O0206",
-            "major_status": "ACTIVE",
-        },
-        {
-            "major_name": "인공지능컴퓨팅전공",
-            "major_code": "1O0208",
-            "major_status": "ACTIVE",
-        },
-        {
-            "major_name": "심화컴퓨팅전공",
-            "major_code": "1O0209",
-            "major_status": "ACTIVE",
-        },
-        {
-            "major_name": "첨단컴퓨팅연구전공",
-            "major_code": "1O0210",
-            "major_status": "ACTIVE",
-        },
-        {"major_name": "ICT융합학과", "major_code": "1O15", "major_status": "ACTIVE"},
-        {"major_name": "AI대학", "major_code": "A7", "major_status": "ACTIVE"},
+        # AI대학 신설 전공
         {
             "major_name": "인공지능시스템학과",
             "major_code": "A701",
             "major_status": "ACTIVE",
         },
-        {"major_name": "컴퓨터학부", "major_code": "A702", "major_status": "ACTIVE"},
         {
             "major_name": "심화컴퓨팅전공",
             "major_code": "A70201",
@@ -53,17 +20,41 @@ def post_majors():
             "major_code": "A70202",
             "major_status": "ACTIVE",
         },
+        {"major_name": "AI자율학부", "major_code": "A703", "major_status": "ACTIVE"},
+        # 기존 전공
         {
-            "major_name": "플랫폼소프트웨어전랫",
-            "major_code": "A70203",
+            "major_name": "심화컴퓨팅전공",
+            "major_code": "1O0209",
+            "major_status": "ACTIVE",
+        },
+        {
+            "major_name": "첨단컴퓨팅연구전공",
+            "major_code": "1O0210",
+            "major_status": "ACTIVE",
+        },
+        {
+            "major_name": "인공지능컴퓨팅전공",
+            "major_code": "1O0208",
+            "major_status": "ACTIVE",
+        },
+        {
+            "major_name": "글로벌소프트웨어융합전공",
+            "major_code": "1O0204",
+            "major_status": "ACTIVE",
+        },
+        {"major_name": "컴퓨터학부", "major_code": "1O02", "major_status": "ACTIVE"},
+        {
+            "major_name": "플랫폼소프트웨어전공",
+            "major_code": "1O0205",
             "major_status": "ACTIVE",
         },
         {
             "major_name": "데이터과학전공",
-            "major_code": "A70204",
+            "major_code": "1O0206",
             "major_status": "ACTIVE",
         },
-        {"major_name": "AI자율학부", "major_code": "A703", "major_status": "ACTIVE"},
+        {"major_name": "ICT융합학과", "major_code": "1O15", "major_status": "ACTIVE"},
+        # 대학원
         {"major_name": "컴퓨터학부", "major_code": "21153", "major_status": "ACTIVE"},
         {
             "major_name": "ICT융합전공",
@@ -96,10 +87,10 @@ def post_majors():
             "major_status": "ACTIVE",
         },
         {
-            "major_name": "컴퓨터공학전공",
+            "major_name": "산업대학원컴퓨터공학전공",
             "major_code": "2260108",
             "major_status": "ACTIVE",
-        }
+        },
     ]
 
     for major in majors:
