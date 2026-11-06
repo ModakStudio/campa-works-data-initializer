@@ -17,7 +17,7 @@ SEMESTER_TYPES = {
     "STCU000600003": ["FIRST", "SECOND"],
 }
 GRADUATE_SEMESTERS = ("FIRST", "SECOND")
-COURSE_TYPES = {
+COURSE_CATEGORIES = {
     "STCU000700001": "MAJOR",
     "STCU000700002": "TEACHER_EDUCATION",
     "STCU000700003": "GENERAL_ELECTIVE",
@@ -51,7 +51,9 @@ def fetch_course_curriculums(major_code, year):
     if response.status_code == 200:
         return json.loads(response.text)["data"]
     else:
-        print(f"Failed to fetch the main page. Status code: {response.status_code}")
+        print(
+            f"Failed to fetch the main page. Status code: {response.status_code}, Message: {response.text}"
+        )
         return []
 
 
@@ -64,7 +66,7 @@ def post_single_course_curriculum(data: dict) -> bool:
     if response.status_code != 201:
         print(
             f"Failed to post course curriculum data for {data}. "
-            f"Status code: {response.status_code}"
+            f"Status code: {response.status_code}, Message: {response.text}"
         )
     else:
         print(f"Successfully posted data for {data}.")
@@ -120,7 +122,9 @@ def post_excel_course_curriculums():
         ]
 
         if len(matching_majors) != 1:
-            print(f"Failed to post course curriculum data for {record['course_code']}.")
+            print(
+                f"Failed to post course curriculum data for {record['course_code']}. No matching major found."
+            )
             continue
 
         course_ids = master_course_ids.get(record["course_code"], [])
@@ -136,7 +140,9 @@ def post_excel_course_curriculums():
         )
 
         if len(course_ids) != 1 or len(matching_curriculum_ids) != 1:
-            print(f"Failed to post course curriculum data for {record['course_code']}.")
+            print(
+                f"Failed to post course curriculum data for {record['course_code']}. No matching course or curriculum found."
+            )
             continue
 
         data = {
@@ -211,7 +217,7 @@ def post_course_curriculums():
                     course_ids = master_course_ids.get(course_code, [])
                     if len(course_ids) != 1:
                         print(
-                            f"Failed to post course curriculum data for {course_code}."
+                            f"Failed to post course curriculum data for {course_code}. No matching course found."
                         )
                         continue
 
@@ -224,22 +230,24 @@ def post_course_curriculums():
                         if len(matching_curriculum_ids) != 1:
                             print(
                                 f"Failed to post course curriculum data for "
-                                f"{course_code}."
+                                f"{course_code}. No matching curriculum found."
                             )
                             continue
 
-                        course_type = COURSE_TYPES.get(record.get("sbjetSctinClscd"))
-                        if course_type is None:
+                        course_category = COURSE_CATEGORIES.get(
+                            record.get("sbjetSctinClscd")
+                        )
+                        if course_category is None:
                             print(
                                 f"Failed to post course curriculum data for "
                                 f"{course_code}. Unknown course type."
                             )
                             continue
-                        if course_type == "MAJOR":
+                        if course_category == "MAJOR":
                             if record.get("sbjetSctcd") == "STCU000800012":
-                                course_type = "MAJOR_REQUIRED"
+                                course_category = "MAJOR_REQUIRED"
                             elif record.get("sbjetSctcd") == "STCU000800004":
-                                course_type = "MAJOR_ELECTIVE"
+                                course_category = "MAJOR_ELECTIVE"
                             else:
                                 print(
                                     f"Failed to post course curriculum data for "
@@ -250,7 +258,7 @@ def post_course_curriculums():
                         data = {
                             "master_course_id": course_ids[0],
                             "curriculum_id": matching_curriculum_ids[0],
-                            "course_type": course_type,
+                            "course_category": course_category,
                         }
 
                         connection = (
