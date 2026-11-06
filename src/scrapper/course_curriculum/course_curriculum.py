@@ -17,6 +17,12 @@ SEMESTER_TYPES = {
     "STCU000600003": ["FIRST", "SECOND"],
 }
 GRADUATE_SEMESTERS = ("FIRST", "SECOND")
+COURSE_TYPES = {
+    "STCU000700001": 'MAJOR',
+    "STCU000700002": "TEACHER_EDUCATION",
+    "STCU000700003": 'GENERAL_ELECTIVE',
+    "STCU000700004": "FREE_ELECTIVE",
+}
 
 request_payload = {
     "isApi": "Y",
@@ -222,9 +228,29 @@ def post_course_curriculums():
                             )
                             continue
 
+                        course_type = COURSE_TYPES.get(record.get("sbjetSctinClscd"))
+                        if course_type is None:
+                            print(
+                                f"Failed to post course curriculum data for "
+                                f"{course_code}. Unknown course type."
+                            )
+                            continue
+                        if course_type == "MAJOR":
+                            if record.get("sbjetSctcd") == "STCU000800012":
+                                course_type = "MAJOR_REQUIRED" 
+                            elif record.get("sbjetSctcd") == "STCU000800004":
+                                course_type = "MAJOR_ELECTIVE"
+                            else:
+                                print(
+                                    f"Failed to post course curriculum data for "
+                                    f"{course_code}. Unknown major course type."
+                                )
+                                continue
+
                         data = {
                             "master_course_id": course_ids[0],
                             "curriculum_id": matching_curriculum_ids[0],
+                            "course_type": course_type,
                         }
 
                         connection = (
