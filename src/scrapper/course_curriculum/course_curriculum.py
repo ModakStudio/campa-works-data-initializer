@@ -12,9 +12,9 @@ curriculum_url = (
 
 years = range(2020, 2027)
 SEMESTER_TYPES = {
-    "STCU000600001": "FIRST",
-    "STCU000600003": "FIRST",
-    "STCU000600002": "SECOND",
+    "STCU000600001": ["FIRST"],
+    "STCU000600002": ["SECOND"],
+    "STCU000600003": ["FIRST", "SECOND"],
 }
 GRADUATE_SEMESTERS = ("FIRST", "SECOND")
 
@@ -70,20 +70,20 @@ def get_course_curriculum_targets(major_code, record):
     if str(major_code).startswith("2"):
         return [(semester, 1) for semester in GRADUATE_SEMESTERS]
 
-    semester_type = SEMESTER_TYPES.get(record.get("estblSmstrCd"))
+    semester_types = SEMESTER_TYPES.get(record.get("estblSmstrCd"))
     grade_value = record.get("estblGrade")
-    if semester_type is None or grade_value is None:
+    if semester_types is None or grade_value is None:
         return []
 
     try:
         grade = int(grade_value)
-    except TypeError, ValueError:
+    except (TypeError, ValueError):
         return []
 
     if grade not in range(1, 5):
         return []
 
-    return [(semester_type, grade)]
+    return [(semester, grade) for semester in semester_types]
 
 
 def post_excel_course_curriculums():
