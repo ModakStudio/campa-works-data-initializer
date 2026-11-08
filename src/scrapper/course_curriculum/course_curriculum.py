@@ -12,11 +12,17 @@ curriculum_url = (
 
 years = range(2020, 2027)
 SEMESTER_TYPES = {
-    "STCU000600001": "FIRST",
-    "STCU000600003": "FIRST",
-    "STCU000600002": "SECOND",
+    "STCU000600001": ["FIRST"],
+    "STCU000600002": ["SECOND"],
+    "STCU000600003": ["FIRST", "SECOND"],
 }
 GRADUATE_SEMESTERS = ("FIRST", "SECOND")
+COURSE_CATEGORIES = {
+    "STCU000700001": "MAJOR",
+    "STCU000700002": "TEACHER_EDUCATION",
+    "STCU000700003": "GENERAL_ELECTIVE",
+    "STCU000700004": "FREE_ELECTIVE",
+}
 
 request_payload = {
     "isApi": "Y",
@@ -45,7 +51,9 @@ def fetch_course_curriculums(major_code, year):
     if response.status_code == 200:
         return json.loads(response.text)["data"]
     else:
-        print(f"Failed to fetch the main page. Status code: {response.status_code}")
+        print(
+            f"Failed to fetch the main page. Status code: {response.status_code}, Message: {response.text}"
+        )
         return []
 
 
@@ -58,7 +66,7 @@ def post_single_course_curriculum(data: dict) -> bool:
     if response.status_code != 201:
         print(
             f"Failed to post course curriculum data for {data}. "
-            f"Status code: {response.status_code}"
+            f"Status code: {response.status_code}, Message: {response.text}"
         )
     else:
         print(f"Successfully posted data for {data}.")
@@ -70,9 +78,9 @@ def get_course_curriculum_targets(major_code, record):
     if str(major_code).startswith("2"):
         return [(semester, 1) for semester in GRADUATE_SEMESTERS]
 
-    semester_type = SEMESTER_TYPES.get(record.get("estblSmstrCd"))
+    semester_types = SEMESTER_TYPES.get(record.get("estblSmstrCd"))
     grade_value = record.get("estblGrade")
-    if semester_type is None or grade_value is None:
+    if semester_types is None or grade_value is None:
         return []
 
     try:
@@ -83,7 +91,7 @@ def get_course_curriculum_targets(major_code, record):
     if grade not in range(1, 5):
         return []
 
-    return [(semester_type, grade)]
+    return [(semester, grade) for semester in semester_types]
 
 
 def post_excel_course_curriculums():
@@ -114,7 +122,9 @@ def post_excel_course_curriculums():
         ]
 
         if len(matching_majors) != 1:
-            print(f"Failed to post course curriculum data for {record['course_code']}.")
+            print(
+                f"Failed to post course curriculum data for {record['course_code']}. No matching major found."
+            )
             continue
 
         course_ids = master_course_ids.get(record["course_code"], [])
@@ -130,7 +140,9 @@ def post_excel_course_curriculums():
         )
 
         if len(course_ids) != 1 or len(matching_curriculum_ids) != 1:
-            print(f"Failed to post course curriculum data for {record['course_code']}.")
+            print(
+                f"Failed to post course curriculum data for {record['course_code']}. No matching course or curriculum found."
+            )
             continue
 
         data = {
@@ -205,7 +217,7 @@ def post_course_curriculums():
                     course_ids = master_course_ids.get(course_code, [])
                     if len(course_ids) != 1:
                         print(
-                            f"Failed to post course curriculum data for {course_code}."
+                            f"Failed to post course curriculum data for {course_code}. No matching course found."
                         )
                         continue
 
@@ -218,13 +230,35 @@ def post_course_curriculums():
                         if len(matching_curriculum_ids) != 1:
                             print(
                                 f"Failed to post course curriculum data for "
-                                f"{course_code}."
+                                f"{course_code}. No matching curriculum found."
                             )
                             continue
+
+                        course_category = COURSE_CATEGORIES.get(
+                            record.get("sbjetSctinClscd")
+                        )
+                        if course_category is None:
+                            print(
+                                f"Failed to post course curriculum data for "
+                                f"{course_code}. Unknown course type."
+                            )
+                            continue
+                        if course_category == "MAJOR":
+                            if record.get("sbjetSctcd") == "STCU000800012":
+                                course_category = "MAJOR_REQUIRED"
+                            elif record.get("sbjetSctcd") == "STCU000800004":
+                                course_category = "MAJOR_ELECTIVE"
+                            else:
+                                print(
+                                    f"Failed to post course curriculum data for "
+                                    f"{course_code}. Unknown major course type."
+                                )
+                                continue
 
                         data = {
                             "master_course_id": course_ids[0],
                             "curriculum_id": matching_curriculum_ids[0],
+                            "course_category": course_category,
                         }
 
                         connection = (
